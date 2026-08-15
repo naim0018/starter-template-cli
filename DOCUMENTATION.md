@@ -1,4 +1,4 @@
-# React + TypeScript Starter Template (RST)
+# React + TypeScript Basekit
 
 A premium, production-ready starter template for React applications with modern tooling and best practices.
 
@@ -26,14 +26,14 @@ A premium, production-ready starter template for React applications with modern 
 
 ```bash
 # Using npx (recommended)
-npx create-rst my-new-app
+npx create-basekit my-new-app
 
 # Using npm init
-npm create rst my-new-app
+npm create basekit my-new-app
 
 # Install globally
-npm install -g create-rst
-create-rst my-new-app
+npm install -g create-basekit
+create-basekit my-new-app
 ```
 
 ### Run the Project

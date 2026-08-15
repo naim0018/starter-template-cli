@@ -2,7 +2,8 @@
 
 import { spawn, spawnSync } from "child_process";
 import { existsSync, rmSync, readdirSync, readFileSync, writeFileSync } from "fs";
-import { resolve, basename } from "path";
+import { resolve, basename, dirname } from "path";
+import { fileURLToPath } from "url";
 import chalk from "chalk";
 import prompts from "prompts";
 import { downloadTemplate } from "giget";
@@ -11,6 +12,9 @@ import validateNpmName from "validate-npm-package-name";
 import gradient from "gradient-string";
 import ora from "ora";
 import cliProgress from "cli-progress";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Helper for smoother UI transitions
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -21,13 +25,13 @@ const run = async () => {
   console.log(
     gradient.pastel.multiline(
       `
-   ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗      ██████╗  ██████╗████████╗
-  ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝      ██╔══██╗██╔════╝╚══██╔══╝
-  ██║     ██████╔╝█████╗  ███████║   ██║   █████╗        ██████╔╝╚█████╗    ██║   
-  ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝        ██╔══██╗ ╚═══██╗   ██║   
-  ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗      ██║  ██║██████╔╝   ██║   
-   ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝      ╚═╝  ╚═╝╚═════╝    ╚═╝   
-      React + TypeScript Starter Pack CLI
+  ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗    ██████╗  █████╗ ███████╗███████╗██╗  ██╗██╗████████╗
+ ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝    ██╔══██╗██╔══██╗██╔════╝██╔════╝██║ ██╔╝██║╚══██╔══╝
+ ██║     ██████╔╝█████╗  ███████║   ██║   █████╗      ██████╔╝███████║███████╗█████╗  █████╔╝ ██║   ██║   
+ ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝      ██╔══██╗██╔══██║╚════██║██╔══╝  ██╔═██╗ ██║   ██║   
+ ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗    ██████╔╝██║  ██║███████║███████╗██║  ██╗██║   ██║   
+  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝   
+      React + TypeScript Basekit CLI
       `
     )
   );
@@ -35,43 +39,63 @@ const run = async () => {
   let projectName = process.argv[2];
   let selectedModules = ["public", "admin", "user"];
 
-  const response = await prompts([
-    {
-      type: projectName ? null : "text",
-      name: "projectName",
-      message: chalk.cyan("What is the name of your project?"),
-      initial: "my-rst-app",
-      validate: (value) => {
-        if (value === ".") return true;
-        const validation = validateNpmName(basename(resolve(value)));
-        if (!validation.validForNewPackages) {
-          return `Invalid project name: ${
-            validation.errors ? validation.errors.join(", ") : ""
-          } ${validation.warnings ? validation.warnings.join(", ") : ""}`;
-        }
-        return true;
-      },
-    },
-    {
-      type: "select",
-      name: "modules",
-      message: chalk.cyan("Which version of the template do you want?"),
-      choices: [
-        {
-          title: "Full Template (Public + Admin + User)",
-          value: ["public", "admin", "user"],
+  let response = {};
+  if (process.env.TEST_MODE) {
+    response = {
+      projectName: projectName || "test-pruned-next",
+      framework: process.env.FRAMEWORK || "next",
+      modules: process.env.MODULES ? process.env.MODULES.split(",") : ["public", "admin"],
+    };
+  } else {
+    response = await prompts([
+      {
+        type: projectName ? null : "text",
+        name: "projectName",
+        message: chalk.cyan("What is the name of your project?"),
+        initial: "my-basekit-app",
+        validate: (value) => {
+          if (value === ".") return true;
+          const validation = validateNpmName(basename(resolve(value)));
+          if (!validation.validForNewPackages) {
+            return `Invalid project name: ${
+              validation.errors ? validation.errors.join(", ") : ""
+            } ${validation.warnings ? validation.warnings.join(", ") : ""}`;
+          }
+          return true;
         },
-        { title: "Public + Admin Dashboard", value: ["public", "admin"] },
-        { title: "Admin + User Dashboard", value: ["admin", "user"] },
-        { title: "Public Pages Only", value: ["public"] },
-        { title: "Admin Dashboard Only", value: ["admin"] },
-      ],
-      initial: 0,
-    },
-  ]);
+      },
+      {
+        type: "select",
+        name: "framework",
+        message: chalk.cyan("Which framework do you want to use?"),
+        choices: [
+          { title: "React (Vite)", value: "react" },
+          { title: "Next.js (App Router)", value: "next" },
+        ],
+        initial: 0,
+      },
+      {
+        type: "select",
+        name: "modules",
+        message: chalk.cyan("Which version of the template do you want?"),
+        choices: [
+          {
+            title: "Full Template (Public + Admin + User)",
+            value: ["public", "admin", "user"],
+          },
+          { title: "Public + Admin Dashboard", value: ["public", "admin"] },
+          { title: "Admin + User Dashboard", value: ["admin", "user"] },
+          { title: "Public Pages Only", value: ["public"] },
+          { title: "Admin Dashboard Only", value: ["admin"] },
+        ],
+        initial: 0,
+      },
+    ]);
+  }
 
   projectName = projectName || response.projectName;
   selectedModules = response.modules || selectedModules;
+  const framework = response.framework || "react";
 
   if (!projectName) {
     console.log(chalk.red("\n✖ Operation cancelled\n"));
@@ -105,7 +129,7 @@ const run = async () => {
   }
 
   console.log("");
-  console.log(chalk.cyan(`🚀 Creating your React app in ${projectPath}...`));
+  console.log(chalk.cyan(`🚀 Creating your ${framework === "next" ? "Next.js" : "React"} app in ${projectPath}...`));
 
   // Progress Bar for overall process
   const progressBar = new cliProgress.SingleBar(
@@ -121,26 +145,123 @@ const run = async () => {
 
   progressBar.start(100, 0, { task: "Initializing download..." });
 
-  // Download template using giget
-  try {
-    await downloadTemplate(
-      "github:mdkazinaim/starter-template-react-typescript",
-      {
+  // Resolve local paths for dev testing fallback
+  const localTemplatePath = resolve(
+    __dirname,
+    framework === "next" ? "../../next-starter-template" : "../../react-starter-template"
+  );
+  const templateRepo = framework === "next"
+    ? "github:mdkazinaim/next-starter-template-template"
+    : "github:mdkazinaim/starter-template-react-typescript-template";
+
+  let downloaded = false;
+  if (existsSync(localTemplatePath)) {
+    try {
+      const fs = await import("fs");
+      if (typeof fs.cpSync === "function") {
+        fs.cpSync(localTemplatePath, projectPath, {
+          recursive: true,
+          filter: (src) => !src.includes("node_modules") && !src.includes(".next") && !src.includes(".git") && !src.includes("dist"),
+        });
+        downloaded = true;
+        progressBar.update(20, { task: "Local template copied." });
+        await sleep(300);
+      }
+    } catch (e) {
+      // Fallback to git download
+    }
+  }
+
+  if (!downloaded) {
+    try {
+      await downloadTemplate(templateRepo, {
         dir: projectPath,
         force: true,
-      }
-    );
-    progressBar.update(20, { task: "Template downloaded." });
-    await sleep(300);
-  } catch (error) {
-    progressBar.stop();
-    console.error(chalk.red("\n✖ Failed to download template: " + error.message));
-    process.exit(1);
+      });
+      progressBar.update(20, { task: "Template downloaded." });
+      await sleep(300);
+    } catch (error) {
+      progressBar.stop();
+      console.error(chalk.red("\n✖ Failed to download template: " + error.message));
+      process.exit(1);
+    }
   }
 
   // 1. Module Pruning Logic
   const routesPath = resolve(projectPath, "src/routes/Routes.tsx");
-  if (existsSync(routesPath)) {
+  const isNextJs = existsSync(resolve(projectPath, "src/app"));
+
+  if (isNextJs) {
+    progressBar.update(35, { task: "Configuring Admin module..." });
+    await sleep(200);
+    if (!selectedModules.includes("admin")) {
+      rmSync(resolve(projectPath, "src/app/admin"), {
+        recursive: true,
+        force: true,
+      });
+      rmSync(resolve(projectPath, "src/components/common/Skeleton/Admin"), {
+        recursive: true,
+        force: true,
+      });
+      rmSync(resolve(projectPath, "src/lib/nav/admin.ts"), { force: true });
+      const navIndexPath = resolve(projectPath, "src/lib/nav/index.ts");
+      if (existsSync(navIndexPath)) {
+        let content = readFileSync(navIndexPath, "utf-8");
+        content = content.replace(/export \* from "\.\/admin";\n?/g, "");
+        writeFileSync(navIndexPath, content);
+      }
+    }
+
+    progressBar.update(50, { task: "Configuring User module..." });
+    await sleep(200);
+    if (!selectedModules.includes("user")) {
+      rmSync(resolve(projectPath, "src/app/user"), {
+        recursive: true,
+        force: true,
+      });
+      rmSync(resolve(projectPath, "src/components/common/Skeleton/User"), {
+        recursive: true,
+        force: true,
+      });
+      rmSync(resolve(projectPath, "src/lib/nav/user.ts"), { force: true });
+      const navIndexPath = resolve(projectPath, "src/lib/nav/index.ts");
+      if (existsSync(navIndexPath)) {
+        let content = readFileSync(navIndexPath, "utf-8");
+        content = content.replace(/export \* from "\.\/user";\n?/g, "");
+        writeFileSync(navIndexPath, content);
+      }
+    }
+
+    progressBar.update(65, { task: "Configuring Public module..." });
+    await sleep(200);
+    if (!selectedModules.includes("public")) {
+      rmSync(resolve(projectPath, "src/app/page.tsx"), { force: true });
+      if (selectedModules.includes("admin") || selectedModules.includes("user")) {
+        const target = selectedModules.includes("admin") ? "/admin" : "/user";
+        const redirectPageContent = `"use client";\nimport { redirect } from "next/navigation";\nexport default function RootPage() {\n  redirect("${target}");\n}\n`;
+        writeFileSync(resolve(projectPath, "src/app/page.tsx"), redirectPageContent);
+      }
+    } else {
+      const pagePath = resolve(projectPath, "src/app/page.tsx");
+      if (existsSync(pagePath)) {
+        let pageContent = readFileSync(pagePath, "utf-8");
+        if (!selectedModules.includes("admin")) {
+          pageContent = pageContent.replace(
+            /\{\/\* \[ADMIN_LINK_START\] \*\/\}[\s\S]*?\{\/\* \[ADMIN_LINK_END\] \*\/\}\n?/g,
+            ""
+          );
+        }
+        if (!selectedModules.includes("user")) {
+          pageContent = pageContent.replace(
+            /\{\/\* \[USER_LINK_START\] \*\/\}[\s\S]*?\{\/\* \[USER_LINK_END\] \*\/\}\n?/g,
+            ""
+          );
+        }
+        pageContent = pageContent.replace(/\{\/\* \[[A-Z_]+\] \*\/\}\n?/g, "");
+        writeFileSync(pagePath, pageContent);
+      }
+    }
+  } else if (existsSync(routesPath)) {
     let routesContent = readFileSync(routesPath, "utf-8");
 
     progressBar.update(35, { task: "Configuring Admin module..." });
@@ -249,17 +370,24 @@ const run = async () => {
 
   // 1.5 Replace App Name placeholders
   progressBar.update(85, { task: "Customizing application name..." });
-  const filesToUpdate = [
-    "index.html",
-    "src/Layout/PublicLayout/Navbar.tsx",
-    "src/Layout/DashboardLayout/Sidebar.tsx",
-  ];
+  const filesToUpdate = isNextJs
+    ? [
+        "src/app/layout.tsx",
+        "src/components/layout/Sidebar.tsx",
+      ]
+    : [
+        "index.html",
+        "src/Layout/PublicLayout/Navbar.tsx",
+        "src/Layout/DashboardLayout/Sidebar.tsx",
+      ];
 
   filesToUpdate.forEach((file) => {
     const filePath = resolve(projectPath, file);
     if (existsSync(filePath)) {
       let content = readFileSync(filePath, "utf-8");
       content = content.replace(/REACT STARTER TEMPLATE/g, appName);
+      content = content.replace(/Next.js Basekit Starter Template/g, `${appName} Starter Template`);
+      content = content.replace(/BASEKIT/g, appName.toUpperCase());
       writeFileSync(filePath, content);
     }
   });

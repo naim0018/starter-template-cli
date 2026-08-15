@@ -1,7 +1,7 @@
-# React Starter Template (RST) 🚀
+# React Basekit (create-basekit) 🚀
 
 > [!IMPORTANT]
-> **RST** is a premium, production-ready React starter kit designed for performance, scalability, and a superior developer experience.
+> **Basekit** is a premium, production-ready React starter kit designed for performance, scalability, and a superior developer experience.
 
 A modern, full-stack-ready frontend boilerplate built with **React 19**, **Vite 6**, and **Tailwind CSS v4**. It features a modular architecture with pre-built modules for Public pages, Admin dashboards, and User dashboards.
 
@@ -16,7 +16,7 @@ The recommended way to start a new project is using our interactive CLI. It allo
 Run the following command in your terminal:
 
 ```bash
-npx create-rst my-awesome-app
+npx create-basekit my-awesome-app
 ```
 
 ### 2. Follow the Interactive Prompts
