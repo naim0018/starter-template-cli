@@ -150,8 +150,8 @@ const run = async () => {
     framework === "next" ? "../../next-starter-template" : "../../react-starter-template"
   );
   const templateRepo = framework === "next"
-    ? "github:mdkazinaim/next-starter-template-template"
-    : "github:mdkazinaim/starter-template-react-typescript-template";
+    ? "github:naim0018/next-starter-template"
+    : "github:naim0018/react-starter-template";
 
   let downloaded = false;
   if (existsSync(localTemplatePath)) {
