@@ -10,7 +10,6 @@ import { downloadTemplate } from "giget";
 import validateNpmName from "validate-npm-package-name";
 
 import gradient from "gradient-string";
-import ora from "ora";
 import cliProgress from "cli-progress";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,7 +30,7 @@ const run = async () => {
  ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝      ██╔══██╗██╔══██║╚════██║██╔══╝  ██╔═██╗ ██║   ██║   
  ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗    ██████╔╝██║  ██║███████║███████╗██║  ██╗██║   ██║   
   ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝   
-      React + TypeScript Basekit CLI
+      React/Nextjs + TypeScript Basekit CLI
       `
     )
   );

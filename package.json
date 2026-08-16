@@ -3,7 +3,7 @@
   "version": "0.2.10",
   "type": "module",
   "bin": "./bin/cli.js",
-  "description": "React + TypeScript Starter Pack CLI",
+  "description": "React/Nextjs + TypeScript Starter Pack CLI",
   "author": "naim0018",
   "license": "MIT",
   "repository": {
@@ -16,6 +16,7 @@
   "homepage": "https://github.com/mdkazinaim/starter-template-react-typescript#readme",
   "keywords": [
     "react",
+    "nextjs",
     "typescript",
     "starter",
     "template",
