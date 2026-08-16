@@ -467,10 +467,11 @@ const run = async () => {
   // Async install function to allow progress bar to animate
   const installDeps = () => {
     return new Promise((resolve) => {
-      const child = spawn("npm", ["install"], {
+      const cmd = /^win/.test(process.platform) ? "npm.cmd" : "npm";
+      const child = spawn(cmd, ["install"], {
         cwd: projectPath,
         stdio: "ignore",
-        shell: true,
+        shell: false,
       });
 
       child.on("close", (code) => {

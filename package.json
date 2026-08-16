@@ -1,6 +1,6 @@
 {
   "name": "create-basekit",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "type": "module",
   "bin": "./bin/cli.js",
   "description": "React/Nextjs + TypeScript Starter Pack CLI",
