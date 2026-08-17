@@ -479,7 +479,6 @@ const run = async () => {
       });
     });
   };
-
   const exitCode = await installDeps();
 
   clearInterval(progressInterval);
