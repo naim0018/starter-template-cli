@@ -1,13 +1,13 @@
 {
   "name": "create-basekit",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "type": "module",
   "bin": "./bin/cli.js",
   "description": "React/Nextjs + TypeScript Starter Pack CLI",
   "author": "naim0018",
   "license": "MIT",
   "repository": {
-    "type": "git",
+    "type": "git",  
     "url": "git+https://github.com/naim0018/starter-template-cli.git"
   },
   "bugs": {
