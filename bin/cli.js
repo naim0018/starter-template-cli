@@ -471,7 +471,7 @@ const run = async () => {
       const child = spawn(cmd, ["install"], {
         cwd: projectPath,
         stdio: "ignore",
-        shell: false,
+        shell: true,
       });
 
       child.on("close", (code) => {
