@@ -13,8 +13,6 @@ dist-ssr
 *.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -42,3 +40,7 @@ file_list.txt
 grep_bat_results.txt
 
 node_modules
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore

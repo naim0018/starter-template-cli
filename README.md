@@ -72,5 +72,4 @@ npm run dev
 
 This project is licensed under the **MIT License**.
 
-Built with ❤️ by [naim0018](https://github.com/naim0018)
-
+Built by 🇧🇩 [naim0018](https://github.com/naim0018)
