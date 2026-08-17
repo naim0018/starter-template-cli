@@ -46,50 +46,94 @@ const run = async () => {
       modules: process.env.MODULES ? process.env.MODULES.split(",") : ["public", "admin"],
     };
   } else {
-    response = await prompts([
-      {
-        type: projectName ? null : "text",
-        name: "projectName",
-        message: chalk.cyan("What is the name of your project?"),
-        initial: "my-basekit-app",
-        validate: (value) => {
-          if (value === ".") return true;
-          const validation = validateNpmName(basename(resolve(value)));
-          if (!validation.validForNewPackages) {
-            return `Invalid project name: ${
-              validation.errors ? validation.errors.join(", ") : ""
-            } ${validation.warnings ? validation.warnings.join(", ") : ""}`;
-          }
-          return true;
-        },
-      },
-      {
-        type: "select",
-        name: "framework",
-        message: chalk.cyan("Which framework do you want to use?"),
-        choices: [
-          { title: "React (Vite)", value: "react" },
-          { title: "Next.js (App Router)", value: "next" },
-        ],
-        initial: 0,
-      },
-      {
-        type: "select",
-        name: "modules",
-        message: chalk.cyan("Which version of the template do you want?"),
-        choices: [
-          {
-            title: "Full Template (Public + Admin + User)",
-            value: ["public", "admin", "user"],
+    let currentStep = projectName ? 1 : 0;
+    
+    while (currentStep < 3) {
+      if (currentStep === 0) {
+        const res = await prompts({
+          type: "text",
+          name: "projectName",
+          message: chalk.cyan("What is the name of your project?"),
+          initial: response.projectName || "my-basekit-app",
+          validate: (value) => {
+            if (value === ".") return true;
+            const validation = validateNpmName(basename(resolve(value)));
+            if (!validation.validForNewPackages) {
+              return `Invalid project name: ${
+                validation.errors ? validation.errors.join(", ") : ""
+              } ${validation.warnings ? validation.warnings.join(", ") : ""}`;
+            }
+            return true;
           },
-          { title: "Public + Admin Dashboard", value: ["public", "admin"] },
-          { title: "Admin + User Dashboard", value: ["admin", "user"] },
-          { title: "Public Pages Only", value: ["public"] },
-          { title: "Admin Dashboard Only", value: ["admin"] },
-        ],
-        initial: 0,
-      },
-    ]);
+        });
+        
+        if (res.projectName === undefined) {
+           console.log(chalk.red("\n✖ Operation cancelled\n"));
+           process.exit(1);
+        }
+        
+        response.projectName = res.projectName;
+        currentStep++;
+      }
+      
+      if (currentStep === 1) {
+        const res = await prompts({
+          type: "select",
+          name: "framework",
+          message: chalk.cyan("Which framework do you want to use?"),
+          choices: [
+            { title: "React (Vite)", value: "react" },
+            { title: "Next.js (App Router)", value: "next" },
+            ...(projectName ? [] : [{ title: chalk.gray("← Go Back"), value: "BACK" }])
+          ],
+          initial: response.framework === "next" ? 1 : 0,
+        });
+        
+        if (res.framework === undefined) {
+           console.log(chalk.red("\n✖ Operation cancelled\n"));
+           process.exit(1);
+        }
+        
+        if (res.framework === "BACK") {
+          currentStep--;
+        } else {
+          response.framework = res.framework;
+          currentStep++;
+        }
+      }
+      
+      if (currentStep === 2) {
+        const res = await prompts({
+          type: "select",
+          name: "modules",
+          message: chalk.cyan("Which version of the template do you want?"),
+          choices: [
+            {
+              title: "Full Template (Public + Admin + User)",
+              value: ["public", "admin", "user"],
+            },
+            { title: "Public + Admin Dashboard", value: ["public", "admin"] },
+            { title: "Admin + User Dashboard", value: ["admin", "user"] },
+            { title: "Public Pages Only", value: ["public"] },
+            { title: "Admin Dashboard Only", value: ["admin"] },
+            { title: chalk.gray("← Go Back"), value: "BACK" }
+          ],
+          initial: 0, // Could save index for better UX, but this is fine
+        });
+        
+        if (res.modules === undefined) {
+           console.log(chalk.red("\n✖ Operation cancelled\n"));
+           process.exit(1);
+        }
+        
+        if (res.modules === "BACK") {
+          currentStep--;
+        } else {
+          response.modules = res.modules;
+          currentStep++;
+        }
+      }
+    }
   }
 
   projectName = projectName || response.projectName;

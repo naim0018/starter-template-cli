@@ -1,9 +1,9 @@
-# React Basekit (create-basekit) 🚀
+# React/Next.js Basekit (create-basekit) 🚀
 
 > [!IMPORTANT]
-> **Basekit** is a premium, production-ready React starter kit designed for performance, scalability, and a superior developer experience.
+> **Basekit** is a premium, production-ready React/Next.js starter kit designed for performance, scalability, and a superior developer experience.
 
-A modern, full-stack-ready frontend boilerplate built with **React 19**, **Vite 6**, and **Tailwind CSS v4**. It features a modular architecture with pre-built modules for Public pages, Admin dashboards, and User dashboards.
+A modern, full-stack-ready frontend boilerplate built with **React 19/Next.js 16**, **Vite 6**, and **Tailwind CSS v4**. It features a modular architecture with pre-built modules for Public pages, Admin dashboards, and User dashboards.
 
 ---
 
@@ -23,7 +23,8 @@ npx create-basekit my-awesome-app
 
 The CLI will guide you through:
 1. **Naming** your project.
-2. **Selecting Modules**:
+2. **Selecting Framework**: (React/Vite or Next.js)
+3. **Selecting Modules**:
    - `Full Template`: (Public + Admin + User)
    - `Public + Admin Dashboard`
    - `Admin + User Dashboard`
@@ -41,7 +42,7 @@ npm run dev
 
 ## ✨ Features
 
-- **⚡ Modern Stack**: Powered by **React 19** and **Vite 6** for lightning-fast development and optimized builds.
+- **⚡ Modern Stack**: Powered by **React 19/Next.js 16** and **Vite 6** for lightning-fast development, server-side rendering, and optimized builds.
 - **🎨 Tailwind CSS v4**: Experience the latest in utility-first CSS with native cascade layers and high-performance styling.
 - **🏗️ Modular Architecture**: Choose your setup during installation:
   - **Public Pages**: Modern landing and informational pages.
