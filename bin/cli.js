@@ -11,6 +11,9 @@ import validateNpmName from "validate-npm-package-name";
 
 import gradient from "gradient-string";
 import cliProgress from "cli-progress";
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
